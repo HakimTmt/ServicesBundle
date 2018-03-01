@@ -1,0 +1,44 @@
+services:
+#Service  
+    #tmt uploader service
+    uploader_service:
+        class: Tmt\ServicesBundle\Services\Uploader\Uploader
+        arguments: ["@service_container"]
+    #tmt mailer service    
+    mailer_service:
+        class: Tmt\ServicesBundle\Services\Mailer\Mailer
+        arguments: ["@service_container"]
+        calls:
+            - ['getAdminsEmails']
+    #tmt pagination service    
+    pagination_service:
+        class: Tmt\ServicesBundle\Services\Pagination\Pagination
+        arguments: ["@service_container"]
+    #tmt office service    
+    office_service:
+        class: Tmt\ServicesBundle\Services\Office\Excel
+        arguments: ["@service_container"] 
+    command_service:
+        class: 'Tmt\ServicesBundle\Services\Command\Command'
+        arguments: ["@service_container"]
+        
+#Twig extension 
+    #tmt time ago extension
+    time.ago.extension:
+        class: Tmt\ServicesBundle\Twig\TimeAgoEx\TimeAgoExtension
+        arguments: ["@service_container"]
+        tags:
+            - { name: twig.extension }         
+    #tmt Tmt extension
+    tmt.extension:
+        class: Tmt\ServicesBundle\Twig\TmtExtension\TmtExtension
+        arguments: ["@service_container"]
+        tags:
+            - { name: twig.extension }  
+    
+    video.extension:
+        class: Tmt\ServicesBundle\Services\VideoEx\VideoExtension
+        arguments: ["@service_container"]
+        tags:
+            - { name: twig.extension } 
+                
