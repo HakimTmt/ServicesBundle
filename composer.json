@@ -2,7 +2,7 @@
         "name": "tmt/services-bundle",
         "type": "symfony-bundle",
         "description": "some useful services ",
-        "keywords": ["mailer", "office", "pagination", "uploader", "video"],
+        "keywords": ["office", "pagination", "uploader", "video"],
         "license": "MIT",
         "authors": [
             {
