@@ -28,6 +28,5 @@
         "autoload": {
             "psr-0": { "Tmt\\ServicesBundle": "" }
         },
-        "target-dir": "Tmt/ServicesBundle",
-        "minimum-stability": "dev"
+        "target-dir": "Tmt/ServicesBundle"
     }
