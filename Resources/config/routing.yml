@@ -1,0 +1,4 @@
+services_bundle:
+    resource: "@TmtServicesBundle/Controller/TestServicesController.php"
+    type:     annotation
+    prefix: /service

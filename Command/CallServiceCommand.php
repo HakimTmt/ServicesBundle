@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use DateTime;
 
 /**
  * Class CallServiceCommand
@@ -20,8 +19,10 @@ class CallServiceCommand extends ContainerAwareCommand {
      */
     protected function configure() {
         $this
-                ->setName('command:service:call')
+                ->setName('tmt:service:call')
                 ->setDescription('Calls a service method with arguments')
+                ->addArgument('service', InputArgument::REQUIRED, 'Service ID')
+                ->addArgument('method', InputArgument::REQUIRED, 'Method to call on the service')
                 ->addOption('data', null, InputOption::VALUE_OPTIONAL, 'Arguments to supply to the method');
     }
 
@@ -29,17 +30,27 @@ class CallServiceCommand extends ContainerAwareCommand {
      * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output) {
-        $container = $this->getContainer();
-        $doctrine = $container->get('doctrine');
-        $em = $doctrine->getManager();
+
+        $serviceId = $input->getArgument('service');
+        $service = $this->getContainer()->get($serviceId);
+        $method = $input->getArgument('method');
 
         $argsData = $input->getOption('data');
         $data = unserialize(base64_decode($argsData));
-
-        $log = "Process :  - " . date("F j, Y, H:i:s ") . PHP_EOL .
+        if ($argsData) {
+            $res = call_user_func_array([$service, $method], $data);
+        } else {
+            $res = call_user_func([$service, $method]);
+        }
+        $log = "Process : " . PHP_EOL
+                . "    Service: $serviceId" . PHP_EOL
+                . "    Method: $method " . PHP_EOL
+                . "    params: " . print_r($data, TRUE) . PHP_EOL
+                . "    res: " . print_r($res, TRUE) . PHP_EOL
+                . "    Date: " . date("F j, Y, H:i:s ") . PHP_EOL .
                 "-------------------------" . PHP_EOL;
-
-        file_put_contents('./mailLog.txt', $log, FILE_APPEND);
+        $root_dir = $this->getContainer()->getParameter('kernel.logs_dir') ;
+        file_put_contents($root_dir . '/serviceLog.log', $log, FILE_APPEND);
     }
 
 }

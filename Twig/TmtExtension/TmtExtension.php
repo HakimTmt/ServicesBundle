@@ -2,26 +2,24 @@
 
 namespace Tmt\ServicesBundle\Twig\TmtExtension;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Routing\RouterInterface;
 use Twig_Extension;
 use Twig_SimpleFilter;
 use Twig_SimpleFunction;
 
 class TmtExtension extends Twig_Extension {
-
     /**
-     * @var ContainerInterface
+     * @var RouterInterface
      */
-    protected $container;
-
+    protected $router;
+    
     /**
      * Constructor
      * 
-     * @param ContainerInterface $container
+     * @param RouterInterface $router
      */
-    public function __construct($container) {
-
-        $this->container = $container;
+    public function __construct(RouterInterface $router) {
+        $this->router = $router;
     }
 
     /**
@@ -29,7 +27,7 @@ class TmtExtension extends Twig_Extension {
      */
     public function getFunctions() {
         return array(
-            new Twig_SimpleFunction('assetUrl',[$this, 'assetUrl']),
+            new Twig_SimpleFunction('assetUrl', [$this, 'assetUrl']),
         );
     }
 
@@ -45,7 +43,7 @@ class TmtExtension extends Twig_Extension {
      * parameters.yml if there is no active request
      */
     public function assetUrl($path) {
-        $context = $this->container->get('router')->getContext();
+        $context = $this->router->getContext();
         $host = $context->getScheme() . '://' . $context->getHost() . '/';
 
         return $host . $path;
@@ -62,7 +60,7 @@ class TmtExtension extends Twig_Extension {
 
     public function getName() {
 
-        return 'octelio_octelio_extension';
+        return 'tmt_services_extension';
     }
 
 }

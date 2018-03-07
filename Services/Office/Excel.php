@@ -2,56 +2,68 @@
 
 namespace Tmt\ServicesBundle\Services\Office;
 
-use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 use PHPExcel_IOFactory;
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+use Liuggio\ExcelBundle\Factory as LiuggioFactory;
 
 /**
- * Description of Excel
+ * Services to read and write Excel file
  *
- * @author tmt
+ * @author adouiri@techmyteam.com
+ * @author aaboulhaj@techmyteam.com
  */
 class Excel {
 
-    private $container;
 
-    public function __construct(Container $container) {
-        $this->container = $container;
+    public function __construct(LiuggioFactory $phpexcel,$root_dir) {
+        $this->phpexcel = $phpexcel;
+        $this->root_dir = $root_dir;
     }
 
-    public function create_excel_file($data, $file_name) {
+    /**
+     * @param array $data
+     * @param string $file_name
+     * @return StreamedResponse 
+     */
+    public function create_excel_file($data) {
 
         $alphabet = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
-        $phpExcelObject = $this->container->get('phpexcel')->createPHPExcelObject();
-        $phpExcelObject->getProperties()->setCreator("liuggio")
-                ->setLastModifiedBy("Giulio De Donato")
-                ->setTitle("Office 2005 XLSX Test Document")
-                ->setSubject("Office 2005 XLSX Test Document")
-                ->setDescription("Test document for Office 2005 XLSX, generated using PHP classes.")
-                ->setKeywords("office 2005 openxml php")
-                ->setCategory("Test result file");
-
-
+        $phpExcelObject = $this->createPhpExcelObject();
         foreach ($data as $key => $values) {
-
             $i = 0;
-            foreach ($values as $key2 => $val) {
+            foreach ($values as  $val) {
                 $phpExcelObject->setActiveSheetIndex(0)
-                        ->setCellValue($alphabet[$i] . ($key + 1), (is_array($val)) ? implode(',', $val) : $val);
-
-                $i++;
+                        ->setCellValue($alphabet[$i++] . ($key + 1), (is_array($val)) ? implode(',', $val) : $val);
             }
         }
-
         $phpExcelObject->getActiveSheet()->setTitle('Simple');
-        $writer = $this->container->get('phpexcel')->createWriter($phpExcelObject, 'Excel5');
-        $response = $this->container->get('phpexcel')->createStreamedResponse($writer);
-
+        return  $this->phpexcel->createWriter($phpExcelObject, 'Excel5');
+        
+    }
+    
+    /**
+     * @return string file_path 
+     */
+    public function save_excel_file($data,$file_name,$dir=null) {
+        $writer = $this->create_excel_file($data);
+        if(null === $dir){
+            $dir = $this->root_dir . '/../web/uploads/';
+             if (!file_exists($dir)) {
+                    mkdir($dir, 0777, true);
+                    chmod($dir, 0777);
+                }
+        }
+        $filename = $dir .$file_name.'.xls';
+        // create filename
+        $writer->save($filename);
+        return $filename;
+    }
+    /**
+     * @return PHPExcelObject 
+     */
+    public function reponse_excel_file($data,$file_name) {
+        $writer = $this->create_excel_file($data);
+        $response = $this->phpexcel->createStreamedResponse($writer);
+        
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment;filename=' . $file_name . '.csv');
         header('Cache-Control: max-age=0');
@@ -60,14 +72,28 @@ class Excel {
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
         header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header('Pragma: public'); // HTTP/1.0
-
-
-
         return $response;
     }
+    /**
+     * @return PHPExcelObject 
+     */
+    private function createPhpExcelObject() {
+        $phpExcelObject = $this->phpexcel->createPHPExcelObject();
+        $phpExcelObject->getProperties()->setCreator("liuggio")
+                ->setLastModifiedBy("Giulio De Donato")
+                ->setTitle("Office 2005 XLSX Test Document")
+                ->setSubject("Office 2005 XLSX Test Document")
+                ->setDescription("Test document for Office 2005 XLSX, generated using PHP classes.")
+                ->setKeywords("office 2005 openxml php")
+                ->setCategory("Test result file");
+        return $phpExcelObject;
+    }
 
+    /**
+     * @param file $inputFileName
+     * @return array 
+     */
     public function readExcel($inputFileName) {
-//  Read your Excel workbook
         try {
             $inputFileType = PHPExcel_IOFactory::identify($inputFileName);
             $objReader = PHPExcel_IOFactory::createReader($inputFileType);
@@ -80,36 +106,12 @@ class Excel {
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
         for ($row = 1; $row <= $highestRow; $row++) {
-            //  Read a row of data into an array
             $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, NULL, TRUE, FALSE);
             foreach ($rowData as $val) {
                 array_push($data, $val);
             }
         }
-
         return $data;
-    }
-
-    public function read_excel_file($file_path) {
-
-        $objPHPExcel = $this->container->get('phpexcel')->createPHPExcelObject($file_path);
-        $ligne = array();
-        foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
-
-
-            foreach ($worksheet->getRowIterator() as $row) {
-                $cellIterator = $row->getCellIterator();
-                $cellIterator->setIterateOnlyExistingCells(false);
-                $lignes = array();
-
-                foreach ($cellIterator as $cell) {
-                    array_push($lignes, $cell->getValue());
-                }
-                array_push($ligne, $lignes);
-            }
-        }
-
-        return $ligne;
     }
 
 }

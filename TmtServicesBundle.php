@@ -4,6 +4,6 @@ namespace Tmt\ServicesBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class ServiceBundle extends Bundle
+class TmtServicesBundle extends Bundle
 {
 }
