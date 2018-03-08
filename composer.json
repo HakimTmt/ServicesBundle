@@ -22,11 +22,10 @@
         "symfony/symfony": "^3.0",
         "symfony/framework-bundle": ">=2.1",
         "twig/twig": "*",
-        "doctrine/doctrine-bundle": "*",
         "liuggio/excelbundle": "^2.1"
     },
     "autoload": {
-        "psr-0": {
+        "psr-4": {
             "Tmt\\ServicesBundle": ""
         }
     },
