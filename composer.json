@@ -1,32 +1,36 @@
 {
-        "name": "tmt/services-bundle",
-        "type": "symfony-bundle",
-        "description": "some useful services ",
-        "keywords": ["office", "pagination", "uploader", "video"],
-        "license": "MIT",
-        "authors": [
-            {
-                "name": "Ahmed DOUIRI",
-                "email": "adouiri@tachmyteam.com",
-                "homepage": "http://www.techmyteam.com"               
-            },
-            {
-                "name": "Abdelhakim ABOULHAJ",
-                "email": "aaboulhaj@tachmyteam.com",
-                "homepage": "http://www.techmyteam.com",
-                "role": "Developer"
-            }
-        ],
-        "require": {
-            "php": ">=5.3.2",
-            "symfony/symfony": "^3.0",
-            "symfony/framework-bundle": ">=2.1", 
-            "twig/twig": "*",
-            "doctrine/doctrine-bundle": "*",
-            "liuggio/excelbundle": "^2.1"
+    "name": "tmt/services-bundle",
+    "type": "symfony-bundle",
+    "description": "some useful services ",
+    "keywords": ["office", "pagination", "uploader", "video"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ahmed DOUIRI",
+            "email": "adouiri@tachmyteam.com",
+            "homepage": "http://www.techmyteam.com"
         },
-        "autoload": {
-            "psr-0": { "Tmt\\ServicesBundle": "" }
-        },
-        "target-dir": "Tmt/ServicesBundle"
-    }
+        {
+            "name": "Abdelhakim ABOULHAJ",
+            "email": "aaboulhaj@tachmyteam.com",
+            "homepage": "http://www.techmyteam.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "symfony/symfony": "^3.0",
+        "symfony/framework-bundle": ">=2.1",
+        "twig/twig": "*",
+        "doctrine/doctrine-bundle": "*",
+        "liuggio/excelbundle": "^2.1"
+    },
+    "autoload": {
+        "psr-0": {
+            "Tmt\\ServicesBundle": ""
+        }
+    },
+    "target-dir": "Tmt/ServicesBundle",
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
